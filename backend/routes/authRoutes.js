@@ -1,36 +1,58 @@
 const express = require('express');
-const admin = require('../firebase');
-
+const admin = require('../firebase'); // Your firebase admin config
 const router = express.Router();
 
-// Signup (optional — mostly handled from frontend)
-router.post('/signup', async (req, res) => {
-  const { email, password, displayName } = req.body;
+// Login endpoint
+router.post('/login', async (req, res) => {
   try {
-    const user = await admin.auth().createUser({
-      email,
-      password,
-      displayName
+    const { idToken } = req.body;
+    
+    if (!idToken) {
+      return res.status(400).json({ error: 'ID token is required' });
+    }
+    
+    // Verify the Firebase ID token
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const uid = decodedToken.uid;
+    
+    // Here you can create a session, store user info, etc.
+    // For now, just return success
+    res.json({ 
+      message: 'Login successful', 
+      uid: uid,
+      email: decodedToken.email 
     });
-
-    res.status(201).json({ uid: user.uid, email: user.email });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+    
+  } catch (error) {
+    console.error('Login verification error:', error);
+    res.status(401).json({ error: 'Invalid token' });
   }
 });
 
-// Login — verifies Firebase ID token
-router.post('/login', async (req, res) => {
-  const { idToken } = req.body;
+// Signup endpoint
+router.post('/signup', async (req, res) => {
   try {
-    const decoded = await admin.auth().verifyIdToken(idToken);
-    res.status(200).json({
-      uid: decoded.uid,
-      email: decoded.email,
-      name: decoded.name || ''
+    const { idToken } = req.body;
+    
+    if (!idToken) {
+      return res.status(400).json({ error: 'ID token is required' });
+    }
+    
+    // Verify the Firebase ID token
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    const uid = decodedToken.uid;
+    
+    // Here you can save user to your database
+    // For now, just return success
+    res.json({ 
+      message: 'Signup successful', 
+      uid: uid,
+      email: decodedToken.email 
     });
-  } catch (err) {
-    res.status(401).json({ error: 'Invalid or expired token' });
+    
+  } catch (error) {
+    console.error('Signup verification error:', error);
+    res.status(401).json({ error: 'Invalid token' });
   }
 });
 

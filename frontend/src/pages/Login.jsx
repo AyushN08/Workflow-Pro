@@ -9,25 +9,32 @@ import PasswordField from '../components/PasswordField';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async e => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+    
     try {
       // Firebase Auth: sign in
-      await signInWithEmailAndPassword(auth, email, password);
-
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      
       // Get Firebase ID token
-      const idToken = await auth.currentUser.getIdToken();
-
+      const idToken = await userCredential.user.getIdToken();
+      
       // Optional: Send to backend for session/auth verification
       await axios.post('http://localhost:5000/api/auth/login', { idToken });
-
-      // Redirect
-      navigate('/');
+      
+      // Redirect to dashboard
+      navigate('/dashboard');
     } catch (err) {
       console.error("Login error:", err.message);
-      alert(err.message);
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -38,16 +45,37 @@ const Login = () => {
         className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md"
       >
         <h2 className="text-2xl font-bold mb-6 text-center text-indigo-600">Login</h2>
-        <InputField label="Email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" />
-        <PasswordField label="Password" value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" />
+        
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
+          </div>
+        )}
+        
+        <InputField 
+          label="Email" 
+          type="email" 
+          value={email} 
+          onChange={e => setEmail(e.target.value)} 
+          placeholder="you@example.com"
+          disabled={loading}
+        />
+        <PasswordField 
+          label="Password" 
+          value={password} 
+          onChange={e => setPassword(e.target.value)} 
+          placeholder="••••••••"
+          disabled={loading}
+        />
         <button
           type="submit"
-          className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
+          disabled={loading}
+          className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Login
+          {loading ? 'Logging in...' : 'Login'}
         </button>
         <p className="text-sm text-center mt-4">
-          Don’t have an account? <Link to="/signup" className="text-indigo-600 font-medium">Sign up</Link>
+          Don't have an account? <Link to="/signup" className="text-indigo-600 font-medium">Sign up</Link>
         </p>
       </form>
     </div>
