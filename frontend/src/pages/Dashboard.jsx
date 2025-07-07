@@ -17,8 +17,12 @@ import {
   FiUsers,
   FiCalendar,
   FiFilter,
-  FiSearch
+  FiSearch,
+  FiColumns, // Changed from FiKanban to FiColumns
+  FiFolder,
+  FiUserCheck
 } from 'react-icons/fi';
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -62,6 +66,12 @@ const Dashboard = () => {
     { name: 'Database Backup', time: 'Tomorrow at 2:00 AM', priority: 'medium' },
     { name: 'Client Data Sync', time: 'Friday at 10:00 AM', priority: 'low' },
     { name: 'Monthly Analytics', time: 'Next Monday at 9:00 AM', priority: 'high' }
+  ];
+
+  const navigationItems = [
+    { name: 'Kanban Board', icon: FiColumns, path: '/kanban', description: 'Manage tasks and workflows' }, // Changed from FiKanban to FiColumns
+    { name: 'Projects', icon: FiFolder, path: '/projects', description: 'View and manage projects' },
+    { name: 'Teams', icon: FiUsers, path: '/teams', description: 'Manage team members' }
   ];
 
   const getStatusColor = (status) => {
@@ -111,6 +121,21 @@ const Dashboard = () => {
               Workflow-Pro
             </h1>
           </div>
+          
+          {/* Navigation Menu */}
+          <nav className="hidden md:flex items-center gap-6">
+            {navigationItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => navigate(item.path)}
+                className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-all duration-200"
+              >
+                <item.icon className="w-4 h-4" />
+                <span className="text-sm font-medium">{item.name}</span>
+              </button>
+            ))}
+          </nav>
+
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
               <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -152,6 +177,30 @@ const Dashboard = () => {
                 <FiSettings className="w-5 h-5" /> Settings
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* Quick Navigation Cards */}
+        <section className="mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Access</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {navigationItems.map((item) => (
+              <button
+                key={item.name}
+                onClick={() => navigate(item.path)}
+                className="flex items-center gap-4 p-4 bg-white rounded-xl shadow-sm border border-gray-200 hover:shadow-md hover:border-indigo-200 transition-all duration-200 text-left group"
+              >
+                <div className="w-12 h-12 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <item.icon className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900 group-hover:text-indigo-600 transition-colors">
+                    {item.name}
+                  </h4>
+                  <p className="text-sm text-gray-500">{item.description}</p>
+                </div>
+              </button>
+            ))}
           </div>
         </section>
 
@@ -248,13 +297,26 @@ const Dashboard = () => {
                     <FiPlusCircle className="w-5 h-5 text-indigo-600" />
                     <span className="text-sm font-medium text-indigo-600">Create New Agent</span>
                   </button>
-                  <button className="w-full flex items-center gap-3 p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
-                    <FiBarChart2 className="w-5 h-5 text-gray-600" />
-                    <span className="text-sm font-medium text-gray-600">View Analytics</span>
+                  <button 
+                    onClick={() => navigate('/kanban')}
+                    className="w-full flex items-center gap-3 p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <FiColumns className="w-5 h-5 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-600">Kanban Board</span>
                   </button>
-                  <button className="w-full flex items-center gap-3 p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                  <button 
+                    onClick={() => navigate('/projects')}
+                    className="w-full flex items-center gap-3 p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
+                    <FiFolder className="w-5 h-5 text-gray-600" />
+                    <span className="text-sm font-medium text-gray-600">View Projects</span>
+                  </button>
+                  <button 
+                    onClick={() => navigate('/teams')}
+                    className="w-full flex items-center gap-3 p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
+                  >
                     <FiUsers className="w-5 h-5 text-gray-600" />
-                    <span className="text-sm font-medium text-gray-600">Manage Team</span>
+                    <span className="text-sm font-medium text-gray-600">Manage Teams</span>
                   </button>
                 </div>
               </div>

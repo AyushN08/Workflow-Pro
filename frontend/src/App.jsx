@@ -2,6 +2,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Kanban from './pages/Kanban';
+import ProjectsPage from './pages/ProjectsPage';
+import TeamsPage from './pages/TeamsPage';
 import Dashboard from './pages/Dashboard';
 
 function App() {
@@ -12,6 +15,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/kanban" element={<Kanban />} />
+          <Route path="/projects" element={<ProjectsPage />} />
+          <Route path="/teams" element={<TeamsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </Router>
