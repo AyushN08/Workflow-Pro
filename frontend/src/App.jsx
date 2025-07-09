@@ -5,7 +5,9 @@ import Signup from './pages/Signup';
 import Kanban from './pages/Kanban';
 import ProjectsPage from './pages/ProjectsPage';
 import TeamsPage from './pages/TeamsPage';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard'
+import WorkflowCreationTool from './pages/WorkflowCreationTool';
+;
 
 function App() {
   return (
@@ -19,6 +21,7 @@ function App() {
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/teams" element={<TeamsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/WorkflowCreationTool" element={<WorkflowCreationTool />} />
         </Routes>
       </Router>
     </div>

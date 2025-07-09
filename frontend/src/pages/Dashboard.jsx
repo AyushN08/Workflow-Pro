@@ -22,6 +22,8 @@ import {
   FiFolder,
   FiUserCheck
 } from 'react-icons/fi';
+import { Link } from 'react-router-dom';
+
 
 
 const Dashboard = () => {
@@ -297,6 +299,14 @@ const Dashboard = () => {
                     <FiPlusCircle className="w-5 h-5 text-indigo-600" />
                     <span className="text-sm font-medium text-indigo-600">Create New Agent</span>
                   </button>
+                  <button 
+                      onClick={() => navigate('/WorkflowCreationTool')}
+                      className="w-full flex items-center gap-3 p-3 text-left bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 rounded-lg transition-all"
+                    >
+                      <FiZap className="w-5 h-5 text-green-600" />
+                    <span className="text-sm font-medium text-green-600">Create Workflow</span>
+                  </button>
+
                   <button 
                     onClick={() => navigate('/kanban')}
                     className="w-full flex items-center gap-3 p-3 text-left bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
