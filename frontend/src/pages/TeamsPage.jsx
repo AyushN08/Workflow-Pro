@@ -86,15 +86,36 @@ const TeamsPage = () => {
   };
 
   const handleInviteMember = async (e) => {
-    e.preventDefault();
-    if (!inviteEmail.trim()) return;
-    
-    // For now, we'll just show an alert. In production, you'd implement email invitations
-    alert(`Invitation would be sent to ${inviteEmail} for team "${selectedTeam.name}"`);
-    setInviteEmail('');
-    setShowInviteModal(false);
-    setSelectedTeam(null);
-  };
+  e.preventDefault();
+  if (!inviteEmail.trim()) return;
+
+  try {
+    const response = await fetch('http://localhost:5000/api/invite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: inviteEmail,
+        teamName: selectedTeam.name,
+        inviter: user.displayName || user.email
+      })
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      alert(`Invitation sent to ${inviteEmail}`);
+    } else {
+      alert(`Failed to send invitation: ${data.message}`);
+    }
+  } catch (error) {
+    console.error('Error sending invitation:', error);
+    alert('Error sending invitation. Please try again.');
+  }
+
+  setInviteEmail('');
+  setShowInviteModal(false);
+  setSelectedTeam(null);
+};
+
 
   const formatDate = (timestamp) => {
     if (!timestamp) return 'N/A';
