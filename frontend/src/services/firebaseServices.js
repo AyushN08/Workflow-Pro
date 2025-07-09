@@ -1,4 +1,4 @@
-// services/firebaseServices.js - Complete backend logic for Phase 1
+// services/firebaseServices.js - Fixed version with missing methods added
 import { 
   collection, 
   doc, 
@@ -15,7 +15,7 @@ import {
   serverTimestamp,
   onSnapshot
 } from 'firebase/firestore';
-import { auth,  db } from '../firebase';
+import { auth, db } from '../firebase';
 
 // TEAM MANAGEMENT
 export const teamService = {
@@ -36,19 +36,27 @@ export const teamService = {
     }
   },
 
-  // Get user's teams
+  // Get user's teams - FIXED: Simplified query to avoid index issues
   async getUserTeams(userId) {
     try {
+      // First try the simple query without ordering
       const q = query(
         collection(db, 'teams'),
-        where('members', 'array-contains', userId),
-        orderBy('createdAt', 'desc')
+        where('members', 'array-contains', userId)
       );
+      
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
+      const teams = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      // Sort in memory instead of in the query
+      return teams.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(0);
+        const bTime = b.createdAt?.toDate?.() || new Date(0);
+        return bTime - aTime; // Newest first
+      });
     } catch (error) {
       console.error('Error fetching teams:', error);
       throw error;
@@ -127,19 +135,74 @@ export const projectService = {
     }
   },
 
-  // Get team projects
-  async getTeamProjects(teamId) {
+  // ADDED: Get user's projects - This was missing!
+  async getUserProjects(userId) {
     try {
+      // Get projects where user is the creator
       const q = query(
         collection(db, 'projects'),
-        where('teamId', '==', teamId),
-        orderBy('createdAt', 'desc')
+        where('createdBy', '==', userId)
       );
+      
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
+      const projects = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      // Sort in memory
+      return projects.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(0);
+        const bTime = b.createdAt?.toDate?.() || new Date(0);
+        return bTime - aTime; // Newest first
+      });
+    } catch (error) {
+      console.error('Error fetching user projects:', error);
+      throw error;
+    }
+  },
+
+  // ADDED: Get single project - This was missing!
+  async getProject(projectId) {
+    try {
+      const projectRef = doc(db, 'projects', projectId);
+      const projectSnap = await getDoc(projectRef);
+      
+      if (projectSnap.exists()) {
+        return {
+          id: projectSnap.id,
+          ...projectSnap.data()
+        };
+      } else {
+        throw new Error('Project not found');
+      }
+    } catch (error) {
+      console.error('Error fetching project:', error);
+      throw error;
+    }
+  },
+
+  // Get team projects - FIXED: Simplified query
+  async getTeamProjects(teamId) {
+    try {
+      // Simple query without ordering to avoid index issues
+      const q = query(
+        collection(db, 'projects'),
+        where('teamId', '==', teamId)
+      );
+      
+      const querySnapshot = await getDocs(q);
+      const projects = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      // Sort in memory
+      return projects.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(0);
+        const bTime = b.createdAt?.toDate?.() || new Date(0);
+        return bTime - aTime; // Newest first
+      });
     } catch (error) {
       console.error('Error fetching projects:', error);
       throw error;
@@ -173,8 +236,30 @@ export const projectService = {
 
 // BOARD MANAGEMENT
 export const boardService = {
-  // Create default board for project
-  async createBoard(projectId, boardName = 'Main Board') {
+  // UPDATED: Create board - Fixed to match Kanban component usage
+  async createBoard(boardData, userId) {
+    try {
+      const docRef = await addDoc(collection(db, 'boards'), {
+        ...boardData,
+        createdBy: userId,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      
+      // Return the created board data
+      return {
+        id: docRef.id,
+        ...boardData,
+        createdBy: userId
+      };
+    } catch (error) {
+      console.error('Error creating board:', error);
+      throw error;
+    }
+  },
+
+  // Create default board for project (keeping the old method for backward compatibility)
+  async createDefaultBoard(projectId, boardName = 'Main Board') {
     try {
       const docRef = await addDoc(collection(db, 'boards'), {
         projectId,
@@ -216,7 +301,8 @@ export const boardService = {
     try {
       const boardRef = doc(db, 'boards', boardId);
       await updateDoc(boardRef, {
-        columns: columns
+        columns: columns,
+        updatedAt: serverTimestamp()
       });
     } catch (error) {
       console.error('Error updating board columns:', error);
@@ -247,19 +333,27 @@ export const taskService = {
     }
   },
 
-  // Get board tasks
+  // Get board tasks - FIXED: Simplified query
   async getBoardTasks(boardId) {
     try {
+      // Simple query without ordering to avoid index issues
       const q = query(
         collection(db, 'tasks'),
-        where('boardId', '==', boardId),
-        orderBy('order', 'asc')
+        where('boardId', '==', boardId)
       );
+      
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
+      const tasks = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      // Sort in memory by order
+      return tasks.sort((a, b) => {
+        const aOrder = a.order || 0;
+        const bOrder = b.order || 0;
+        return aOrder - bOrder;
+      });
     } catch (error) {
       console.error('Error fetching tasks:', error);
       throw error;
@@ -318,12 +412,11 @@ export const taskService = {
     }
   },
 
-  // Real-time listener for tasks
+  // Real-time listener for tasks - FIXED: Simplified query
   subscribeToTasks(boardId, callback) {
     const q = query(
       collection(db, 'tasks'),
-      where('boardId', '==', boardId),
-      orderBy('order', 'asc')
+      where('boardId', '==', boardId)
     );
     
     return onSnapshot(q, (querySnapshot) => {
@@ -331,6 +424,14 @@ export const taskService = {
         id: doc.id,
         ...doc.data()
       }));
+      
+      // Sort in memory
+      tasks.sort((a, b) => {
+        const aOrder = a.order || 0;
+        const bOrder = b.order || 0;
+        return aOrder - bOrder;
+      });
+      
       callback(tasks);
     });
   }
@@ -354,19 +455,26 @@ export const sprintService = {
     }
   },
 
-  // Get project sprints
+  // Get project sprints - FIXED: Simplified query
   async getProjectSprints(projectId) {
     try {
       const q = query(
         collection(db, 'sprints'),
-        where('projectId', '==', projectId),
-        orderBy('createdAt', 'desc')
+        where('projectId', '==', projectId)
       );
+      
       const querySnapshot = await getDocs(q);
-      return querySnapshot.docs.map(doc => ({
+      const sprints = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
+
+      // Sort in memory
+      return sprints.sort((a, b) => {
+        const aTime = a.createdAt?.toDate?.() || new Date(0);
+        const bTime = b.createdAt?.toDate?.() || new Date(0);
+        return bTime - aTime; // Newest first
+      });
     } catch (error) {
       console.error('Error fetching sprints:', error);
       throw error;
