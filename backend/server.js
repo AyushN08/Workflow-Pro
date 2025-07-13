@@ -4,9 +4,21 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const authRoutes = require('./routes/authRoutes');
+const githubRoutes = require('./routes/githubRoutes');
 
 // Load env vars
 dotenv.config();
+
+// Debug environment variables
+console.log('=== Environment Variables Check ===');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('PORT:', process.env.PORT);
+console.log('GITHUB_CLIENT_ID:', process.env.GITHUB_CLIENT_ID ? 'Set ✅' : 'Missing ❌');
+console.log('GITHUB_CLIENT_SECRET:', process.env.GITHUB_CLIENT_SECRET ? 'Set ✅' : 'Missing ❌');
+console.log('GITHUB_CALLBACK_URL:', process.env.GITHUB_CALLBACK_URL || 'Missing ❌');
+console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Set ✅' : 'Missing ❌');
+console.log('MONGO_URI:', process.env.MONGO_URI ? 'Set ✅' : 'Not set');
+console.log('=====================================');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -17,10 +29,26 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/github', githubRoutes);
 
 // Root check
 app.get('/', (req, res) => {
   res.send('Workflow-Pro Backend (CommonJS) is Running ✅');
+});
+
+// Environment check endpoint
+app.get('/api/env-check', (req, res) => {
+  res.json({
+    github: {
+      CLIENT_ID: !!process.env.GITHUB_CLIENT_ID,
+      CLIENT_SECRET: !!process.env.GITHUB_CLIENT_SECRET,
+      CALLBACK_URL: process.env.GITHUB_CALLBACK_URL
+    },
+    email: {
+      EMAIL_USER: !!process.env.EMAIL_USER,
+      EMAIL_PASS: !!process.env.EMAIL_PASS
+    }
+  });
 });
 
 const transporter = nodemailer.createTransport({
@@ -43,7 +71,7 @@ app.post('/api/invite', async (req, res) => {
       <p><strong>${inviter}</strong> invited you to join the team "<strong>${teamName}</strong>" on <strong>Workflow-Pro</strong>.</p>
       <p>Click the link below to accept the invitation:</p>
       <p><a href="https://your-app-url.com/signup">Join Now</a></p>
-      <p>If you don’t have an account, you can sign up for free.</p>
+      <p>If you don't have an account, you can sign up for free.</p>
       <br/>
       <p>– The Workflow-Pro Team</p>
     `

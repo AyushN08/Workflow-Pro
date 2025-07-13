@@ -299,6 +299,15 @@ const Dashboard = () => {
                     <FiPlusCircle className="w-5 h-5 text-indigo-600" />
                     <span className="text-sm font-medium text-indigo-600">Create New Agent</span>
                   </button>
+                  <button
+                    onClick={() => {
+                    window.location.href = 'http://localhost:5000/api/github/login'; // update domain in production
+                }}
+                    className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
+                  >
+                    Connect GitHub
+                  </button>
+
                   <button 
                       onClick={() => navigate('/WorkflowCreationTool')}
                       className="w-full flex items-center gap-3 p-3 text-left bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 rounded-lg transition-all"

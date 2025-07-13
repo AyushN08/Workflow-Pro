@@ -7,6 +7,7 @@ import ProjectsPage from './pages/ProjectsPage';
 import TeamsPage from './pages/TeamsPage';
 import Dashboard from './pages/Dashboard'
 import WorkflowCreationTool from './pages/WorkflowCreationTool';
+import GitHubSuccess from './pages/GitHubSuccess';
 ;
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
           <Route path="/teams" element={<TeamsPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/WorkflowCreationTool" element={<WorkflowCreationTool />} />
+          <Route path="/github-success" element={<GitHubSuccess />} />
         </Routes>
       </Router>
     </div>
