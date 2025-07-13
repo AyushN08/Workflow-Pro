@@ -303,9 +303,20 @@ const Dashboard = () => {
                     onClick={() => {
                     window.location.href = 'http://localhost:5000/api/github/login'; // update domain in production
                 }}
-                    className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition"
+                    className="w-full flex items-center gap-3 p-3 text-left bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 rounded-lg transition-all"
                   >
-                    Connect GitHub
+                    <FiPlusCircle className="w-5 h-5 text-indigo-600" />
+                    <span className="text-sm font-medium text-indigo-600">Connect GitHub</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                    window.location.href = 'http://localhost:5000/api/google/login'; // update domain in production
+                }}
+                    className="w-full flex items-center gap-3 p-3 text-left bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 rounded-lg transition-all"
+                  >
+                    <FiPlusCircle className="w-5 h-5 text-indigo-600" />
+                    <span className="text-sm font-medium text-indigo-600">Connect Google Calendar</span>
                   </button>
 
                   <button 

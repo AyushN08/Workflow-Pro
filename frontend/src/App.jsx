@@ -8,6 +8,7 @@ import TeamsPage from './pages/TeamsPage';
 import Dashboard from './pages/Dashboard'
 import WorkflowCreationTool from './pages/WorkflowCreationTool';
 import GitHubSuccess from './pages/GitHubSuccess';
+import GoogleCalendarSuccess from './pages/GoogleCalendarSuccess';
 ;
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/WorkflowCreationTool" element={<WorkflowCreationTool />} />
           <Route path="/github-success" element={<GitHubSuccess />} />
+          <Route path="/google-calendar-success" element={<GoogleCalendarSuccess />} />
         </Routes>
       </Router>
     </div>

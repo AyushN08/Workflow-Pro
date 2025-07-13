@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const nodemailer = require('nodemailer');
 const authRoutes = require('./routes/authRoutes');
 const githubRoutes = require('./routes/githubRoutes');
+const googleCalendarRoutes = require('./routes/googleCalendarRoutes');
 
 // Load env vars
 dotenv.config();
@@ -30,6 +31,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/github', githubRoutes);
+app.use('/api/google', googleCalendarRoutes);
 
 // Root check
 app.get('/', (req, res) => {
