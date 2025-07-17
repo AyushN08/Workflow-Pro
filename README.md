@@ -39,7 +39,7 @@
 - Sync task deadlines with your calendar
 - Get reminders and see events in your project timeline
 
-  ### 🔗 GitHub Integration
+### 🔗 GitHub Integration
 
 - Connect personal or organization GitHub accounts
 - Link GitHub **commits**, **issues**, and **pull requests** to Workflow-Pro tasks
