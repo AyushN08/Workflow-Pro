@@ -32,7 +32,7 @@
 
 - Easily invite team members to join via their email
 - Accept invite links and automatically join the right team
-- Email backend powered by Node.js and nodemailer (or SendGrid)
+- Email backend powered by Node.js and nodemailer
 
 ### 📆 Google Calendar Integration
 
