@@ -88,7 +88,7 @@
 - Node.js v18+
 - Firebase Project (for Auth and Firestore)
 - Google Cloud Project (for Calendar Integration – optional)
-- Nodemailer or SendGrid for sending emails
+- Nodemailer for sending emails
 
 ### 🔧 Backend Setup
 
