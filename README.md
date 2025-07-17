@@ -57,7 +57,7 @@
 | **Auth**           | Firebase Authentication                          |
 | **Database**       | Firebase Firestore                               |
 | **Email System**   | Nodemailer or SendGrid (custom Node endpoint)    |
-| **Calendar (WIP)** | Google Calendar API                              |
+| **Calendar (WIP)** | GitHub API (OAuth + Webhooks), Google Calendar API                              |
 
 ---
 
